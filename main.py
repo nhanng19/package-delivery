@@ -1,6 +1,9 @@
 import csv
-from datetime import timedelta
 import msvcrt
+import time
+import sys
+
+from datetime import timedelta
 from HashMap import HashMap
 from Package import Package
 from DeliveryTruck import DeliveryTruck
@@ -68,24 +71,44 @@ def simulate_delivery(truck):
         next_package.delivery_time = truck.time
         next_package.departure_time = truck.depart_time
     
-for i, truck in enumerate(trucks):    
-    if i == 2:
-        trucks[2].depart_time = min(trucks[0].time, trucks[1].time)
-    simulate_delivery(truck)
-
 class Main:
     def __init__(self):
         print("WGUPS Routing Program")
+        input("Press Enter to start the delivery process...")
+        self.load_animation()
+        self.start_delivery()
         self.show_menu()
 
+    def load_animation(self):
+        print("\nDelivering packages...")
+        truck_frames = [
+            "[🚚........]",
+            "[..🚚......]",
+            "[....🚚....]",
+            "[......🚚..]",
+            "[........🚚]"
+        ]
+        num_repeats = 3
+        for _ in range(num_repeats):
+            for frame in truck_frames:
+                sys.stdout.write(f"\r{frame}")
+                sys.stdout.flush()
+                time.sleep(0.4)
+        print("\nPackages delivered!\n")
+
+    def start_delivery(self):
+        for i, truck in enumerate(trucks):    
+            if i == 2:
+                trucks[2].depart_time = min(trucks[0].time, trucks[1].time)
+            simulate_delivery(truck)
+
     def show_menu(self):
-        print("Press '1' to view package details (for all packages)")
+        print("Press '1' to view package details")
         print("Press '2' to view total mileage")
         print("Press '3' to exit the program")
 
         while True:
             choice = msvcrt.getch().decode("utf-8")
-
             if choice == "1":
                 self.view_package_details()
                 break
@@ -95,25 +118,35 @@ class Main:
             elif choice == "3":
                 self.exit_program("Goodbye!")
                 break
-            else:
-                print("Invalid option; please try again.")
 
     def view_package_details(self):
         try:
-            time_input = input("At what time do you want to view the delivery status? (HH:MM) ")
+            time_input = input("\nAt what time do you want to view the delivery status? (HH:MM) ")
             hr, min = time_input.split(":")
             convert_time = timedelta(hours=int(hr), minutes=int(min))
-            package_input = input("Type 'all' to view every package or 'one' for a single package: ").lower()
-            if package_input == "one":
-                self.view_single_package(convert_time)
-            elif package_input == "all":
-                self.view_all_packages(convert_time)
-            else:
-                print("Invalid option; please try again.")
-                self.view_package_details()
+            print("\nPress '1' to view a single package or '2' for all packages: ")
+            while True:
+                choice = msvcrt.getch().decode("utf-8")
+                if choice == "1":
+                    self.view_single_package(convert_time)
+                    break
+                elif choice == "2":
+                    self.view_all_packages(convert_time)
+                    break
+                else:
+                    print("Invalid option; please try again.")
+                    self.view_package_details()
+
         except ValueError:
             print("Invalid time format; please try again.")
             self.view_package_details()
+
+    def print_header(self):
+            print(
+                f"{'Truck':<7}{'ID':<5}{'Address':<40}{'City':<20}{'State':<5}"
+                f"{'Zip':<10}{'Deadline':<10}{'Weight':<10}{'Status':<20}"
+            )
+            print("-" * 150)
 
     def view_single_package(self, convert_time):
         try:
@@ -121,9 +154,10 @@ class Main:
             package_id = int(single_input)
             package = package_hash_map.get(package_id)
             if package:
+                self.print_header()
                 for i, truck in enumerate(trucks, start=1):
                     if package_id in truck.packages:
-                        print(f'Truck {i} {package.update_status(convert_time)}')
+                        print(f"{i:<7}{package.update_status(convert_time)}")
             else:
                 print("Package not found; please try again.")
                 self.view_single_package(convert_time)
@@ -133,13 +167,14 @@ class Main:
 
     def view_all_packages(self, convert_time):
         try:
+            self.print_header()
             for package_id in range(1, 41):
                 package = package_hash_map.get(package_id)
                 if package:
                     for i, truck in enumerate(trucks, start=1):
                         if package_id in truck.packages:
-                            print(f'Truck {i} {package.update_status(convert_time)}')
-                            break  # No need to continue checking trucks once found
+                            print(f"{i:<7}{package.update_status(convert_time)}")
+                            break
         except ValueError:
             self.exit_program("An error occurred; exiting the program.")
 
@@ -147,7 +182,7 @@ class Main:
         total_mileage = sum(truck.mileage for truck in trucks)
         for i, truck in enumerate(trucks, start=1):
             print(f'Truck {i} traveled {truck.mileage:.2f} miles.')
-        print(f'The total distance traveled by all trucks is {total_mileage:.2f} miles.')
+        print(f'\nThe total distance traveled by all trucks is {total_mileage:.2f} miles.\n')
 
     def exit_program(self, message):
         print(message)
