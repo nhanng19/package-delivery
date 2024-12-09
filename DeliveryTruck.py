@@ -1,6 +1,19 @@
 class DeliveryTruck:
+    """
+    Implementation of a delivery truck object with properties
+    """
     def __init__(self, packages=None, depart_time=None, capacity=16, speed=18, mileage=0.0, address="4001 South 700 East"):
         """
+        Initializes a delivery truck instance
+        Args:
+            packages (list[int])
+            depart_time (datetime.timedelta)
+            capacity (int)
+            speed (float)
+            mileage (float)
+            address (str)
+        Returns:
+            None
         """
         self.capacity = capacity
         self.speed = speed
@@ -10,7 +23,3 @@ class DeliveryTruck:
         self.address = address
         self.depart_time = depart_time
         self.time = depart_time
-
-    def __str__(self):
-        return f"Capacity: {self.capacity}, Speed: {self.speed} mph, Load: {self.load}, Mileage: {self.mileage} miles, Address: {self.address}, Departure Time: {self.depart_time}, Current Time: {self.time}"
-

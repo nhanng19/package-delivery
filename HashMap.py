@@ -1,33 +1,68 @@
 class HashMap:
-    def __init__(self, size=100):
+    """
+    Hash map implementation
+    """
+    def __init__(self, size=100):    
+        """
+        Initializes the HashMap.
+        Args: 
+            size (int): The number of key value pairs
+        Returns:
+            None
+        """
         self.size = size
-        self.list = [[] for _ in range(size)]
+        self.buckets = [[] for _ in range(size)]
 
-    def set(self, key, item):
-        bucket = hash(key) % len(self.list)
-        bucket_list = self.list[bucket]
+    def set(self, key, value):
+        """    
+        Add or update a key value pair.
+        Args: 
+            key: unique identifier 
+            value: value stored for each unique key
+        Returns: 
+            bool
+        """
+        bucket_index = hash(key)
+        bucket = self.buckets[bucket_index]
 
-        for kv in bucket_list:
-            if kv[0] == key:
-                kv[1] = item
+        for i, (k, v) in enumerate(bucket):
+            if k == key:
+                bucket[i] = (key, value)
                 return True
-        
-        key_value = [key, item]
-        bucket_list.append(key_value)
+
+        bucket.append((key, value))
         return True
 
     def get(self, key):
-        bucket = hash(key) % len(self.list)
-        bucket_list = self.list[bucket]
-        for kv in bucket_list:
-            if kv[0] == key:
-                return kv[1]
+        """    
+        Given the key, return the associated value.
+        Args: 
+            key: unique identifier 
+        Returns: 
+            The value of the key, or None if key isn't found.
+        """
+        bucket_index = hash(key)
+        bucket = self.buckets[bucket_index]
+
+        for k, v in bucket:
+            if k == key:
+                return v
         return None
 
     def delete(self, key):
-        bucket = hash(key) % len(self.list)
-        bucket_list = self.list[bucket]
- 
-        for kv in bucket_list:
-          if kv[0] == key:
-              bucket_list.remove([kv[0],kv[1]])
+        """    
+        Delete a key value pair from the HashMap
+        Args: 
+            key: unique identifier 
+        Returns: 
+            True if the pair was successfully removed, False if the key wasn't found.
+        """
+        bucket_index = hash(key)
+        bucket = self.buckets[bucket_index]
+
+        for i, (k, v) in enumerate(bucket):
+            if k == key:
+                del bucket[i]
+                return True
+
+        return False
