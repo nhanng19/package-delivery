@@ -121,7 +121,7 @@ class Main:
             elif option == "2":
                 self.show_total_mileage()
             elif option == "3":
-                self.exit_program("Goodbye!")
+                exit()
             else:
                 print("Invalid option; please try again.")
                 self.show_options()
@@ -129,9 +129,9 @@ class Main:
     # Display options to view the delivery status of any or all packages.
     def show_package_status(self):
         try:
-            time_input = input("\nEnter time (HH:MM) to view package status: ")
-            hr, min = map(int, time_input.split(":"))
-            convert_time = timedelta(hours=hr, minutes=min)
+            time_input = input("\nEnter when (HH:MM) to view package status: ")
+            hours, minutes = map(int, time_input.split(":"))
+            convert_time = timedelta(hours=hours, minutes=minutes)
             print("\nPress '1' for a single package or '2' for all packages: ")
             
             while True:
@@ -187,10 +187,6 @@ class Main:
             print(f"Truck {i} traveled {truck.mileage:.2f} miles.")
         print(f"Total distance traveled by all trucks: {total_mileage:.2f} miles.")
 
-    # Exit the program.
-    def exit_program(self, message):
-        print(message)
-        exit()
 
 if __name__ == "__main__":
     Main()
